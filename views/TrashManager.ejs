@@ -5,8 +5,9 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Test TTN</title>
-    <!--API SOCKET.IO-->
+    <!--API SOCKET.IO +GoogleMaps-->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.2.0/socket.io.js"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAWczO0nzqJmcu5iLtLfWXe8RF9JgnlRyo&callback=initMap&libraries=maps,marker&v=beta" defer></script></script>
     <link rel="stylesheet" href ="./css/style.css">
 </head>
 <body>
@@ -20,7 +21,6 @@
 
 
    
-
     <!--TABLE AREA-->
     <div class="TableArea">
         <!--INFO SELECTION ZONE-->
@@ -67,6 +67,8 @@
                         <th>Filling Level</th>                  
                         <th>Weight [kg]</th>
                         <th>Quantity [m³]</th>
+                        <th hidden>Latitude</th>
+                        <th hidden>Longitude</th>
                     </tr>
                 </thead>
 
@@ -77,6 +79,19 @@
             </table>
         </div>
     </div>
+
+
+
+
+    <!--MAP AREA-->
+    <div class="MapArea">
+        <!--TITLE-->
+        <div class="TitleMapFlex">
+            <h2>MAP</h2>                
+        </div>
+        <!--MAP-->
+        <div id="MapTrash">
+        </div>   
 
 
 
@@ -101,6 +116,8 @@
                         <td id="LevelfillingTrash${index +1}"></td>
                         <td id="WeightTrash${index +1}">${trash.Bytes[trash.Bytes.length -1]}</td>
                         <td id="QuantityTrash${index +1}">${trash.Bytes[trash.Bytes.length -1]}</td>
+                        <td id="LatitudeTrash${index +1}" hidden >${trash.Latitude}</td>
+                        <td id="LongitudeTrash${index +1}" hidden>${trash.Longitude}</td>
                     `;
                     TableBody.appendChild(row);
 
@@ -245,6 +262,77 @@
                 UpdateSelectedCount();
             })
         .catch(error=> console.error("Error fetching data:",error));
+
+
+
+
+
+
+
+        //FCT MAP
+        function initMap() {
+            const Map= new google.maps.Map(document.getElementById("MapTrash"), {
+                zoom: 13,
+                //Par défaut: Bruxelles
+                center: {lat: 50.8466, lng: 4.3528}, 
+                //Retirer Commerces
+                styles: [
+                    {featureType: "poi",
+                    stylers: [{ visibility: "off" }]}
+                ]
+            });
+            //Trajectoire+Dessin du chemin
+            const directionsService= new google.maps.DirectionsService();
+            const directionsRenderer= new google.maps.DirectionsRenderer({
+                polylineOptions: {
+                    strokeColor: "rgba(70, 0, 205, 0.6)",
+                    strokeWeight: 6
+                }
+            });
+            directionsRenderer.setMap(Map);
+
+
+            //Départ+Arrivée: ECAM
+            const Start= {lat: 50.84858958378759, lng: 4.458560946485824};
+            const End= {lat: 50.84870475195036, lng: 4.459306220020603};   
+
+            //FCT: Trash séléctionnés= Points de passage
+            function SelectedWaypoints() {
+                const waypoints= [];
+                document.querySelectorAll(".component-checkbox:checked").forEach((checkbox)=> {
+                    const row= checkbox.closest("tr");
+                    const latitude= parseFloat(row.querySelector(`#LatitudeTrash${row.rowIndex}`).innerText);
+                    const longitude= parseFloat(row.querySelector(`#LongitudeTrash${row.rowIndex}`).innerText);
+                    waypoints.push({location: {lat: latitude, lng: longitude}, stopover: true});
+                });
+                return waypoints;
+            }
+
+            //FCT: Trash séléctionnés= Points de passage
+            function CalculateRoute() {
+                const Waypoints= SelectedWaypoints();       
+                directionsService.route({
+                    origin: Start,
+                    destination: End,
+                    waypoints: Waypoints,
+                    optimizeWaypoints: true,
+                    travelMode: google.maps.TravelMode.DRIVING
+                }, (response,status)=> {
+                    if (status===google.maps.DirectionsStatus.OK) {
+                        directionsRenderer.setDirections(response);
+                        updateRouteSummary(response);
+                    } else {
+                        alert("Erreur Itinéraire: " + status);
+                    }
+                });
+            }
+
+            //MAP BUTTON
+            document.getElementById("MapButton").addEventListener("click",()=> {
+                CalculateRoute();
+                document.querySelector(".TitleMapFlex").scrollIntoView({ behavior: "smooth" });
+            });
+        }
 
 
     </script>

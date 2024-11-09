@@ -33,11 +33,13 @@ client.on("connect",()=> {
 
 //RECUPERATION DATAS DU TTN QU'ON ENREGISTRE DS JSON
 //JSON: Liste [], contenant plusieurs Dict. {}(=chaque poubelle)
-function SaveData(ID, bytes) {
+function SaveData(ID, bytes, latitude, longitude) {
   //Données
   const newTrashData= {
     "ID": ID,
     "Bytes": bytes,
+    "Latitude": latitude,
+    "Longitude": longitude,
   };
   fs.readFile("./public/trashs.json", "utf8", (err, data)=> {
     let jsonData= [];
@@ -57,6 +59,8 @@ function SaveData(ID, bytes) {
     const existingIndex= jsonData.findIndex(trash=> trash.ID===ID);
     if (existingIndex>=0) {
       jsonData[existingIndex].Bytes= bytes;
+      jsonData[existingIndex].Latitude= latitude;
+      jsonData[existingIndex].Longitude= longitude;
     } else {
       jsonData.push(newTrashData);
     }
@@ -76,6 +80,8 @@ client.on("message", (topic, message)=> {
 
   const ID= jsonData.end_device_ids.device_id;
   const Bytes= jsonData.uplink_message.decoded_payload.bytes;
+  const Latitude= jsonData.uplink_message.locations.user.latitude;
+  const Longitude= jsonData.uplink_message.locations.user.longitude;
 
   console.log("ID:", ID);  
   io.emit("event-ID", ID);
@@ -83,10 +89,14 @@ client.on("message", (topic, message)=> {
   console.log("Bytes:", Bytes);  
   io.emit("event-bytes", Bytes);
 
-  SaveData(ID, Bytes);
+  console.log("Latitude:", Latitude)
+  io.emit("event-latitude", Latitude);
+
+  console.log("Longitude:", Longitude)
+  io.emit("event-longitude", Longitude);
+
+  SaveData(ID, Bytes, Latitude, Longitude);
 });
-
-
 
 
 //METHODE LISTEN
