@@ -2,10 +2,250 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Test TTN</title>
+    <!--API SOCKET.IO-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.2.0/socket.io.js"></script>
+    <link rel="stylesheet" href ="./css/style.css">
 </head>
 <body>
-    Hello
+   <!--TITLE AREA-->
+   <div class="TitleArea">
+        <!--TITLE-->
+        <div class="TitleFlex">
+            <h1>TRASH MANAGER</h1>                
+        </div>
+   </div>
+
+
+
+    <!--TABLE AREA-->
+    <div class="TableArea">
+        <!--INFO SELECTION ZONE-->
+        <div class="ZoneSelection">
+            <!--TEXT OF THE ZONE-->
+            <span class="TextSelection">SELECTION</span>
+
+            <!--CHECKBOX-->
+            <div class="ChoiceCheckboxFlex">
+                <!--ALL CHECKBOX-->
+                <div class="AllCheckboxFlex">
+                    <input type="checkbox" id="selectAllCheckbox">
+                    <p id="pAll">Select All</p>
+                </div>
+                <!--RED CHECKBOX-->
+                <div class="RedCheckboxFlex">
+                    <input type="checkbox" id="selectRedCheckbox">
+                    <p id="pRed">Select Filled Trashs</p>
+                </div>
+            </div>
+
+            <!--NUMBER OF SELECTED/TOTAL TRASH-->
+            <div class="InfoNbTrashFlex">
+                <p><span class="underline">Trashs:</span><span> </span><span id="SelectedTrash"></span>/<span id="TotalTrash"></span></p>
+            </div>
+
+            <!--MAP BUTTON-->
+            <div class="MapButtonFlex">
+                <button id="MapButton">CIRCUIT CALCULATION</button>
+            </div>
+        </div>
+
+
+        <!--TABLE OF TRASHS-->
+        <div class="Table">           
+            <!--TABLE-->
+            <table id="TableTrashs">
+                <!--HEADER-->
+                <thead>
+                    <tr>
+                        <th id="thnumber"></th>
+                        <th id="thcheckbox"></th>
+                        <th>ID Trash</th>    
+                        <th>Filling Level</th>                  
+                        <th>Weight [kg]</th>
+                        <th>Quantity [m³]</th>
+                    </tr>
+                </thead>
+
+                <!--CONTENT-->
+                <tbody id="TableBody">
+                    <!--LISTE TRASHS-->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+
+
+
+
+    <script>
+        //LOAD DATA TRASHS FROM JSON
+        fetch("/trashs.json")
+            .then(response=> response.json())
+            .then(data=> {
+                console.log(data)
+
+                //DS TABLE TRASHS: 1LIGNE= CHAQUE POUBELLE DU JSON
+                const TableBody= document.getElementById("TableBody");
+                data.forEach((trash, index)=> {
+                    //AFFICHAGE DES DONNÉES
+                    const row= document.createElement("tr");
+                    row.innerHTML= `
+                        <td id="tdnumber">${index +1}</td>
+                        <td><input type="checkbox" class="component-checkbox"></td>
+                        <td>${trash.ID}</td>
+                        <td id="LevelfillingTrash${index +1}"></td>
+                        <td id="WeightTrash${index +1}">${trash.Bytes[trash.Bytes.length -1]}</td>
+                        <td id="QuantityTrash${index +1}">${trash.Bytes[trash.Bytes.length -1]}</td>
+                    `;
+                    TableBody.appendChild(row);
+
+
+                    //GESTION COULEURS (REMPLISSAGE+TEXTE)
+                    //Récupération Data Poids et Quantité
+                    const weight= parseFloat(trash.Bytes[trash.Bytes.length -1]);
+                    const quantity= parseFloat(trash.Bytes[trash.Bytes.length -1]);
+                    const {Levelfilling, Colorfilling, Colortext, highlightWeight, highlightQuantity}= FillingLevel(weight, quantity);
+
+                    //Remplissage: % et CouleurFond
+                    const LevelfillingCell= document.getElementById(`LevelfillingTrash${index +1}`);
+                    LevelfillingCell.innerText= Levelfilling;
+                    LevelfillingCell.style.backgroundColor= Colorfilling;
+                    //Poids et Quantité: CouleurTexte
+                    const WeightCell= document.getElementById(`WeightTrash${index +1}`);
+                    const QuantityCell= document.getElementById(`QuantityTrash${index +1}`);                   
+                    if (highlightWeight) {
+                        WeightCell.style.color= Colortext;
+                    } else {
+                        WeightCell.style.color= "green";
+                    }
+                    if (highlightQuantity) {
+                        QuantityCell.style.color= Colortext;
+                    } else {
+                        QuantityCell.style.color= "green";
+                    }
+                });
+            
+ 
+                //% +VERT/ORANGE/ROUGE, SELON POIDS ET QUANTITÉ
+                //FCT pour définir % et Couleurs
+                function FillingLevel(weight, quantity){
+                    //Conversion Poids et Quantité pour Nb Float
+                    weight= parseFloat(weight);
+                    quantity= parseFloat(quantity);
+                    //% et Couleur de remplissage, Couleur de texte pour Poids et Quantité
+                    let Levelfilling;
+                    let Colorfilling;
+                    let Colortext= "green";
+                    let highlightWeight= false;
+                    let highlightQuantity= false;
+
+                    //SWITCH CASE POUR 0%,50%,75%,100%
+                    switch (true) {
+                        //0%: Si Poids<=50 ET Quantité<=50
+                        case (weight<=50 && quantity<=50):
+                            Levelfilling= "0%";
+                            Colorfilling= "green";
+                            break;
+
+                        //25%: Si 50<Poids<=100 OU 50<Quantité<=100
+                        case ((weight>50 && weight<=100) || (quantity>50 && quantity<=100)):
+                            Levelfilling= "25%";
+                            Colorfilling= "green";
+                            break;
+
+                        //50%: Si 100<Poids<=120 OU 100<Quantité<=120
+                        case ((weight>100 && weight<=120) || (quantity>100 && quantity<=120)):
+                            Levelfilling= "50%";
+                            Colorfilling= "green";
+                            break;
+
+                        //75%: Si 120<Poids<=228 OU 120<Quantité<=228
+                        case ((weight>120 && weight<=228) || (quantity>120 && quantity<=228)):
+                            Levelfilling= "75%";
+                            Colorfilling= "orange";
+                            Colortext= "orange";
+                            highlightWeight= (weight>120 && weight<=228);
+                            highlightQuantity= (quantity>120 && quantity<=228);                         
+                            break;
+
+                        //100%: Si Poids>=228 OU Quantité>228
+                        case (weight>228 || quantity>228):
+                            Levelfilling= "100%";
+                            Colorfilling= "red";
+                            Colortext= "red";
+                            highlightWeight= (weight>228);
+                            highlightQuantity= (quantity>228);
+                            break;
+
+                        default:
+                            Levelfilling= "Unknown";
+                            Colorfilling= "black";
+                            break;
+                    }
+                    return {Levelfilling, Colorfilling, Colortext, highlightWeight, highlightQuantity};
+                }
+
+
+
+                //SELECTION INFOS(WITH CHECKBOX)
+                //CHECKBOX
+                //ALL CHECKBOX
+                document.getElementById("selectAllCheckbox").addEventListener("change",function() {
+                    const isChecked= this.checked;
+                    //Coche-Décoche tt les checkbox du tableau
+                    document.querySelectorAll(".component-checkbox").forEach(checkbox=> {
+                        checkbox.checked= isChecked;
+                    });
+                    //Si AllCheckbox coché: Décoche RedCheckbox
+                    if (isChecked){
+                        document.getElementById("selectRedCheckbox").checked= false;
+                    }
+                    UpdateSelectedCount();
+                });
+             
+                //RED CHECKBOX
+                document.getElementById("selectRedCheckbox").addEventListener("change",function() {
+                    const isRedChecked= this.checked;
+                    //1)Si AllCheckbox coché: Décoche AllCheckbox +tt les checkbox du tableau
+                    if (isRedChecked && document.getElementById("selectAllCheckbox").checked) {
+                        document.getElementById("selectAllCheckbox").checked= false;
+                        document.querySelectorAll(".component-checkbox").forEach(checkbox=> {
+                            checkbox.checked= false;
+                        });
+                    }
+                    //2)Coche-Décoche les checkbox à 100% de remplissage du tableau
+                    document.querySelectorAll(".component-checkbox").forEach((checkbox, index)=> {
+                        const levelCell= document.querySelector(`#LevelfillingTrash${index +1}`);                      
+                        if (levelCell && levelCell.innerText==="100%") {
+                            checkbox.checked= isRedChecked;
+                        } else {
+                            checkbox.checked= false; 
+                        }
+                    });
+                    UpdateSelectedCount();
+                });
+
+
+                //TOTAL TRASH
+                document.getElementById("TotalTrash").innerText= document.querySelectorAll(".component-checkbox").length;
+
+                //SELECTED TRASH
+                function UpdateSelectedCount() {
+                    const selectedCount= document.querySelectorAll(".component-checkbox:checked").length;
+                    document.getElementById("SelectedTrash").innerText= selectedCount;
+                }
+                document.querySelectorAll(".component-checkbox").forEach(checkbox=> {
+                    checkbox.addEventListener("change",UpdateSelectedCount);
+                });
+                UpdateSelectedCount();
+            })
+        .catch(error=> console.error("Error fetching data:",error));
+
+
+    </script>
 </body>
 </html>
