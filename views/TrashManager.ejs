@@ -20,7 +20,7 @@
    </div>
 
 
-   
+
     <!--TABLE AREA-->
     <div class="TableArea">
         <!--INFO SELECTION ZONE-->
@@ -82,7 +82,6 @@
 
 
 
-
     <!--MAP AREA-->
     <div class="MapArea">
         <!--TITLE-->
@@ -93,8 +92,34 @@
         <div id="MapTrash">
         </div>   
 
+       <!--TABLE RESUMANT LA ROUTE AVEC PTS DE PASSAGE-->
+       <div class="SummaryRoute">
+            <table id="TableSummaryRoute">
+                <thead>
+                    <tr>
+                        <th id="thletter">Lettre</th>
+                        <th>ID</th>
+                        <th>Adresse</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+       </div>
+    </div>
+</div>
+
+<!-- <button id="saveRouteButton" onclick="saveWaypointsToJSON()">REGISTER</button> -->
 
 
+        <!-- A FAIRE:
+        1)Nettoyage Code
+        2)De base Map pas visible, puis MapBouton affiche (+vérfier synthèse Bouton-Fct)
+        3)Cacher l'entête Lettre
+        4)Design Tableau Résumé et Bouton register
+        5)Bouton Register: Enregistre ds JSON les éléments du Tableau
+        6)FAIRE MOCKUPS
+        --> 
 
 
     <script>
@@ -117,8 +142,7 @@
                         <td id="WeightTrash${index +1}">${trash.Bytes[trash.Bytes.length -1]}</td>
                         <td id="QuantityTrash${index +1}">${trash.Bytes[trash.Bytes.length -1]}</td>
                         <td id="LatitudeTrash${index +1}" hidden >${trash.Latitude}</td>
-                        <td id="LongitudeTrash${index +1}" hidden>${trash.Longitude}</td>
-                    `;
+                        <td id="LongitudeTrash${index +1}" hidden>${trash.Longitude}</td>`;
                     TableBody.appendChild(row);
 
 
@@ -149,7 +173,7 @@
             
  
                 //% +VERT/ORANGE/ROUGE, SELON POIDS ET QUANTITÉ
-                //FCT pour définir % et Couleurs
+                //FCT POUR DÉFINIR % +COULEURS
                 function FillingLevel(weight, quantity){
                     //Conversion Poids et Quantité pour Nb Float
                     weight= parseFloat(weight);
@@ -268,7 +292,7 @@
 
 
 
-
+        //MAP WITH ROUTE
         //FCT MAP
         function initMap() {
             const Map= new google.maps.Map(document.getElementById("MapTrash"), {
@@ -278,7 +302,7 @@
                 //Retirer Commerces
                 styles: [
                     {featureType: "poi",
-                    stylers: [{ visibility: "off" }]}
+                    stylers: [{visibility: "off"}]}
                 ]
             });
             //Trajectoire+Dessin du chemin
@@ -292,36 +316,38 @@
             directionsRenderer.setMap(Map);
 
 
+
             //Départ+Arrivée: ECAM
             const Start= {lat: 50.84858958378759, lng: 4.458560946485824};
             const End= {lat: 50.84870475195036, lng: 4.459306220020603};   
 
-            //FCT: Trash séléctionnés= Points de passage
+            //FCT: Trashs séléctionnés= Pts de passage
             function SelectedWaypoints() {
-                const waypoints= [];
+                const Waypoints= [];
                 document.querySelectorAll(".component-checkbox:checked").forEach((checkbox)=> {
                     const row= checkbox.closest("tr");
                     const latitude= parseFloat(row.querySelector(`#LatitudeTrash${row.rowIndex}`).innerText);
                     const longitude= parseFloat(row.querySelector(`#LongitudeTrash${row.rowIndex}`).innerText);
-                    waypoints.push({location: {lat: latitude, lng: longitude}, stopover: true});
+                    Waypoints.push({location: {lat: latitude, lng: longitude}, stopover: true});
                 });
-                return waypoints;
+                return Waypoints;
             }
 
-            //FCT: Trash séléctionnés= Points de passage
+            //FCT: Calcul de route en passant par Trashs sélectionnés
             function CalculateRoute() {
-                const Waypoints= SelectedWaypoints();       
+                const WayPoints= SelectedWaypoints();       
                 directionsService.route({
                     origin: Start,
                     destination: End,
-                    waypoints: Waypoints,
+                    waypoints: WayPoints,
                     optimizeWaypoints: true,
                     travelMode: google.maps.TravelMode.DRIVING
                 }, (response,status)=> {
                     if (status===google.maps.DirectionsStatus.OK) {
                         directionsRenderer.setDirections(response);
-                        updateRouteSummary(response);
-                    } else {
+                        TableSummaryRoute(response);
+                    } 
+                    else {
                         alert("Erreur Itinéraire: " + status);
                     }
                 });
@@ -330,11 +356,73 @@
             //MAP BUTTON
             document.getElementById("MapButton").addEventListener("click",()=> {
                 CalculateRoute();
-                document.querySelector(".TitleMapFlex").scrollIntoView({ behavior: "smooth" });
+                document.querySelector(".TitleMapFlex").scrollIntoView({behavior: "smooth"});
             });
         }
 
 
+
+
+
+        
+        //FCT COORDONNÉES-->ADRESSE
+        async function Address(lat, lng) {
+            const response= await fetch(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=AIzaSyAWczO0nzqJmcu5iLtLfWXe8RF9JgnlRyo`);
+            const data= await response.json();
+            if (data.status==="OK") {
+                return data.results[0].formatted_address;
+            } else {
+                console.error("Erreur Adresse :", data.status);
+                return "Adresse non-trouvée";
+            }
+        }
+
+
+        //FCT TABLE RESUMANT ROUTE AVEC PTS DE PASSAGE
+        async function TableSummaryRoute(response) {
+            const TableSummaryyRoute= document.getElementById("TableSummaryRoute");
+            TableSummaryyRoute.innerHTML= "";
+
+            //Pt de départ(ECAM) 
+            const rowSTART= document.createElement("tr");
+            rowSTART.innerHTML= `
+                <td>A</td>
+                <td>ECAM</td>
+                <td>Prom. de l'Alma 50, 1200 Woluwe-Saint-Lambert, Belgique</td>
+                <td>50.84858958378759</td>
+                <td>4.458560946485824</td>`;
+            TableSummaryyRoute.appendChild(rowSTART);
+
+            //Pts de passage
+            const WaypointsOrder= response.routes[0].waypoint_order;
+            for (let i= 0; i<WaypointsOrder.length; i++) {
+                const index= WaypointsOrder[i];
+                const trashRow= document.querySelectorAll(".component-checkbox:checked")[index].closest("tr");
+                const letter= String.fromCharCode(66 +i); //B,C,D,...
+                const trashID= trashRow.cells[2].innerText;
+                const latitude= trashRow.cells[6].innerText;
+                const longitude= trashRow.cells[7].innerText;
+                const address= await Address(latitude, longitude);
+                let row= document.createElement("tr");
+                row.innerHTML= `
+                    <td>${letter}</td>
+                    <td>${trashID}</td>
+                    <td>${address}</td>
+                    <td>${latitude}</td>
+                    <td>${longitude}</td>`;
+                TableSummaryyRoute.appendChild(row);
+            }
+
+            //Pt d'arrivée(ECAM)
+            const rowEND= document.createElement("tr");
+            rowEND.innerHTML= `
+                <td>${String.fromCharCode(66 +WaypointsOrder.length)}</td>
+                <td>ECAM</td>
+                <td>Prom. de l'Alma 50, 1200 Woluwe-Saint-Lambert, Belgique</td>
+                <td>50.84870475195036</td>
+                <td>4.459306220020603</td>`;
+            TableSummaryyRoute.appendChild(rowEND);
+        }
     </script>
 </body>
 </html>
