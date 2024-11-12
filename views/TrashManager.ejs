@@ -97,29 +97,19 @@
             <table id="TableSummaryRoute">
                 <thead>
                     <tr>
-                        <th id="thletter">Lettre</th>
+                        <th id="thletter"></th>
                         <th>ID</th>
-                        <th>Adresse</th>
+                        <th>Address</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody id="TableBodyy">
                 </tbody>
             </table>
        </div>
     </div>
 </div>
 
-<!-- <button id="saveRouteButton" onclick="saveWaypointsToJSON()">REGISTER</button> -->
 
-
-        <!-- A FAIRE:
-        1)Nettoyage Code
-        2)De base Map pas visible, puis MapBouton affiche (+vérfier synthèse Bouton-Fct)
-        3)Cacher l'entête Lettre
-        4)Design Tableau Résumé et Bouton register
-        5)Bouton Register: Enregistre ds JSON les éléments du Tableau
-        6)FAIRE MOCKUPS
-        --> 
 
 
     <script>
@@ -380,7 +370,7 @@
 
         //FCT TABLE RESUMANT ROUTE AVEC PTS DE PASSAGE
         async function TableSummaryRoute(response) {
-            const TableSummaryyRoute= document.getElementById("TableSummaryRoute");
+            const TableSummaryyRoute= document.getElementById("TableBodyy");
             TableSummaryyRoute.innerHTML= "";
 
             //Pt de départ(ECAM) 
