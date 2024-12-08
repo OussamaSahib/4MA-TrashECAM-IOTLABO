@@ -49,7 +49,7 @@
 
             <!--MAP BUTTON-->
             <div class="MapButtonFlex">
-                <button id="MapButton">PATHWAY CALCULATION</button>
+                <button id="MapButton">ROUTE CALCULATION</button>
             </div>
         </div>
 
@@ -123,10 +123,10 @@
             .then(data=> {
                 console.log(data)
 
-                //DS TABLE TRASHS: 1LIGNE= CHAQUE POUBELLE DU JSON
+                //IN TABLE TRASHS: 1ROW= EACH TRASH OF TRASHS.JSON
                 const TableBody= document.getElementById("TableBody");
                 data.forEach((trash, index)=> {
-                    //AFFICHAGE DES DONNÉES
+                    //DISPLAY DATAS
                     const row= document.createElement("tr");
                     row.innerHTML= `
                         <td id="tdnumber">${index +1}</td>
@@ -140,68 +140,68 @@
                     TableBody.appendChild(row);
 
 
-                    //GESTION COULEURS (REMPLISSAGE+TEXTE)
-                    //Récupération Data Poids et Quantité
+                    //COLOR MANAGEMENT (FILL+TEXT)
+                    //Recovery Data Weight and Quantity
                     const weight= parseFloat(trash.Weight);
                     const quantity= parseFloat(trash.Quantity);
                     const {Levelfilling, Colorfilling, Colortext, highlightWeight, highlightQuantity}= FillingLevel(weight, quantity);
 
-                    //Remplissage: % et CouleurFond
+                    //Fill: % and Background Color
                     const LevelfillingCell= document.getElementById(`LevelfillingTrash${index +1}`);
                     LevelfillingCell.innerText= Levelfilling;
                     LevelfillingCell.style.backgroundColor= Colorfilling;
-                    //Poids et Quantité: CouleurTexte
+                    //Weight and Quantity: Color Text
                     const WeightCell= document.getElementById(`WeightTrash${index +1}`);
                     const QuantityCell= document.getElementById(`QuantityTrash${index +1}`);                   
-                    if (highlightWeight) {
+                    if (highlightWeight){
                         WeightCell.style.color= Colortext;
                     } 
-                    else {
+                    else{
                         WeightCell.style.color= "green";
                     }
-                    if (highlightQuantity) {
+                    if (highlightQuantity){
                         QuantityCell.style.color= Colortext;
                     } 
-                    else {
+                    else{
                         QuantityCell.style.color= "green";
                     }
                 });
             
  
-                //% +VERT/ORANGE/ROUGE, SELON POIDS ET QUANTITÉ
-                //FCT POUR DÉFINIR % +COULEURS
+                //% +GREEN/ORANGE/RED, BY WEIGHT AND QUANTITY
+                //FCT TO DEFINE % +COLORS
                 function FillingLevel(weight, quantity){
-                    //Conversion Poids et Quantité pour Nb Float
+                    //Conversion Weight and Quantity for Float Nb
                     weight= parseFloat(weight);
                     quantity= parseFloat(quantity);
-                    //% et Couleur de remplissage, Couleur de texte pour Poids et Quantité
+                    //%, Fill Color, Text Color for Weight and Quantity
                     let Levelfilling;
                     let Colorfilling;
                     let Colortext= "green";
                     let highlightWeight= false;
                     let highlightQuantity= false;
 
-                    //SWITCH CASE POUR 0%,50%,75%,100%
+                    //SWITCH CASE: 0%,25%,50%,75%,100%
                     switch (true) {
-                        //0%: Si Poids<2,5kg ET Quantité<15
+                        //0%: Weight<2,5kg AND Quantity<15cm
                         case (weight<2.5 && quantity<15):
                             Levelfilling= "0%";
                             Colorfilling= "green";
                             break;
 
-                        //25%: Si 2,5kg<=Poids<5kg OU 15<=Quantité<30
+                        //25%: 2,5kg<=Weight<5kg OR 15cm<=Quantity<30cm
                         case ((weight>=2.5 && weight<5 && quantity<30) || (quantity>=15 && quantity<30 && weight<5)):
                             Levelfilling= "25%";
                             Colorfilling= "green";
                             break;
 
-                        //50%: Si 5kg<=Poids<7,5kg OU 30<=Quantité<45
+                        //50%: 5kg<=Weight<7,5kg OR 30cm<=Quantity<45cm
                         case ((weight>=5 && weight<7.5 && quantity<45) || (quantity>=30 && quantity<45 && weight<7.5)):
                             Levelfilling= "50%";
                             Colorfilling= "green";
                             break;
 
-                        //75%: Si 7.5kg=<Poids<9kg OU 45<=Quantité<54
+                        //75%: 7.5kg=<Weight<9kg OR 45cm<=Quantity<54cm
                         case ((weight>=7.5 && weight<9 && quantity<54) || (quantity>=45 && quantity<54 && weight<9)):
                             Levelfilling= "75%";
                             Colorfilling= "orange";
@@ -210,7 +210,7 @@
                             highlightQuantity= (quantity>=45 && quantity<54);                         
                             break;
 
-                        //100%: Si Poids>=9 OU Quantité>=54
+                        //100%: Weight>=9kg OR Quantity>=54cm
                         case (weight>=9 || quantity>=54):
                             Levelfilling= "100%";
                             Colorfilling= "red";
@@ -234,11 +234,11 @@
                 //ALL CHECKBOX
                 document.getElementById("selectAllCheckbox").addEventListener("change",function() {
                     const isChecked= this.checked;
-                    //Coche-Décoche tt les checkbox du tableau
+                    //Check-Uncheck all the table checkbox
                     document.querySelectorAll(".component-checkbox").forEach(checkbox=> {
                         checkbox.checked= isChecked;
                     });
-                    //Si AllCheckbox coché: Décoche RedCheckbox
+                    //If AllCheckbox checked: Check off RedCheckbox
                     if (isChecked){
                         document.getElementById("selectRedCheckbox").checked= false;
                     }
@@ -248,19 +248,20 @@
                 //RED CHECKBOX
                 document.getElementById("selectRedCheckbox").addEventListener("change",function() {
                     const isRedChecked= this.checked;
-                    //1)Si AllCheckbox coché: Décoche AllCheckbox +tt les checkbox du tableau
-                    if (isRedChecked && document.getElementById("selectAllCheckbox").checked) {
+                    //1)If AllCheckbox checked: Uncheck AllCheckbox +All checkbox of the table
+                    if (isRedChecked && document.getElementById("selectAllCheckbox").checked){
                         document.getElementById("selectAllCheckbox").checked= false;
                         document.querySelectorAll(".component-checkbox").forEach(checkbox=> {
                             checkbox.checked= false;
                         });
                     }
-                    //2)Coche-Décoche les checkbox à 100% de remplissage du tableau
+                    //2)Check-Uncheck the checkbox at 100% filling of the table
                     document.querySelectorAll(".component-checkbox").forEach((checkbox, index)=> {
                         const levelCell= document.querySelector(`#LevelfillingTrash${index +1}`);                      
-                        if (levelCell && levelCell.innerText==="100%") {
+                        if (levelCell && levelCell.innerText==="100%"){
                             checkbox.checked= isRedChecked;
-                        } else {
+                        } 
+                        else{
                             checkbox.checked= false; 
                         }
                     });
@@ -293,15 +294,15 @@
         function initMap() {
             const Map= new google.maps.Map(document.getElementById("MapTrash"), {
                 zoom: 13,
-                //Par défaut: Bruxelles
+                //By default: Bruxelles
                 center: {lat: 50.8466, lng: 4.3528}, 
-                //Retirer Commerces
+                //Remove Shops
                 styles: [
                     {featureType: "poi",
                     stylers: [{visibility: "off"}]}
                 ]
             });
-            //Trajectoire+Dessin du chemin
+            //Path+Drawing of the path
             const directionsService= new google.maps.DirectionsService();
             const directionsRenderer= new google.maps.DirectionsRenderer({
                 polylineOptions: {
@@ -313,11 +314,11 @@
 
 
 
-            //Départ+Arrivée: ECAM
+            //Departure+Arrival: ECAM
             const Start= {lat: 50.84858958378759, lng: 4.458560946485824};
             const End= {lat: 50.84870475195036, lng: 4.459306220020603};   
 
-            //FCT: Trashs séléctionnés= Pts de passage
+            //FCT: Selected Trashs= WaysPoints
             function SelectedWaypoints() {
                 const Waypoints= [];
                 document.querySelectorAll(".component-checkbox:checked").forEach((checkbox)=> {
@@ -329,7 +330,7 @@
                 return Waypoints;
             }
 
-            //FCT: Calcul de route en passant par Trashs sélectionnés
+            //FCT: Route calculation through selected Trashs
             function CalculateRoute() {
                 const WayPoints= SelectedWaypoints();       
                 directionsService.route({
@@ -339,12 +340,12 @@
                     optimizeWaypoints: true,
                     travelMode: google.maps.TravelMode.DRIVING
                 }, (response,status)=> {
-                    if (status===google.maps.DirectionsStatus.OK) {
+                    if (status===google.maps.DirectionsStatus.OK){
                         directionsRenderer.setDirections(response);
                         TableSummaryRoute(response);
                     } 
-                    else {
-                        alert("Erreur Itinéraire: " + status);
+                    else{
+                        alert("Error Route:" + status);
                     }
                 });
             }
@@ -362,35 +363,36 @@
 
 
         
-        //FCT COORDONNÉES-->ADRESSE
+        //FCT COORDINATES-->ADDRESS
         async function Address(lat, lng) {
             const response= await fetch(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=AIzaSyAWczO0nzqJmcu5iLtLfWXe8RF9JgnlRyo`);
             const data= await response.json();
-            if (data.status==="OK") {
+            if (data.status==="OK"){
                 return data.results[0].formatted_address;
-            } else {
-                console.error("Erreur Adresse :", data.status);
-                return "Adresse non-trouvée";
+            } 
+            else{
+                console.error("Erreur Address: ", data.status);
+                return "Address not found";
             }
         }
 
 
-        //FCT TABLE RESUMANT ROUTE AVEC PTS DE PASSAGE
+        //FCT TABLE SUMMARIZING THE ROUTE WITH WAYPOINTS
         async function TableSummaryRoute(response) {
             const TableSummaryyRoute= document.getElementById("TableBodyy");
             TableSummaryyRoute.innerHTML= "";
 
-            //Pt de départ(ECAM) 
+            //Departure(ECAM) 
             const rowSTART= document.createElement("tr");
             rowSTART.innerHTML= `
                 <td>A</td>
                 <td>ECAM</td>
-                <td>Prom. de l'Alma 50, 1200 Woluwe-Saint-Lambert, Belgique</td>
+                <td>Promenade de l'Alma 50, 1200 Woluwe-Saint-Lambert, Belgique</td>
                 <td hidden>50.84858958378759</td>
                 <td hidden>4.458560946485824</td>`;
             TableSummaryyRoute.appendChild(rowSTART);
 
-            //Pts de passage
+            //WaysPoints
             const WaypointsOrder= response.routes[0].waypoint_order;
             for (let i= 0; i<WaypointsOrder.length; i++) {
                 const index= WaypointsOrder[i];
@@ -410,12 +412,12 @@
                 TableSummaryyRoute.appendChild(row);
             }
 
-            //Pt d'arrivée(ECAM)
+            //Arrival(ECAM)
             const rowEND= document.createElement("tr");
             rowEND.innerHTML= `
                 <td>${String.fromCharCode(66 +WaypointsOrder.length)}</td>
                 <td>ECAM</td>
-                <td>Prom. de l'Alma 50, 1200 Woluwe-Saint-Lambert, Belgique</td>
+                <td>Promenade de l'Alma 50, 1200 Woluwe-Saint-Lambert, Belgique</td>
                 <td hidden>50.84870475195036</td>
                 <td hidden>4.459306220020603</td>`;
             TableSummaryyRoute.appendChild(rowEND);

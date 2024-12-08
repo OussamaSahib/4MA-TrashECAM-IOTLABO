@@ -6,14 +6,14 @@ app.use(express.static("public"));
 let router= require("./routes");
 app.use("/",router);
 
-//LIEN TTN VIA SOCKET.IO
+//LINK TTN VIA SOCKET.IO
 let mqtt= require("mqtt");
 const server= require("http").Server(app);
 const io= require("socket.io")(server);
 const fs= require("fs");
 
 
-//CONNEXION À TTN VIA MQTT
+//CONNECTION TO TTN VIA MQTT
 const client= mqtt.connect("mqtt://eu1.cloud.thethings.network:1883", {
   username: "garbage-io@ttn",
   password: "NNSXS.NXV3IRRSDKKKL6SJ6FYJ2FPWYJMISAC5VPI5PYY.FMSLYAK7456GN4O23ZEMLYC56MMLXXQI7F5564VKJ2FADXZAIO2A"
@@ -23,7 +23,7 @@ const deviceIDS= [
   "adafruit-feather-m1"       
 ];
 client.on("connect",()=> {
-  console.log("Connecté à TTN");
+  console.log("Connected à TTN");
   deviceIDS.forEach(deviceID=> {
     client.subscribe(`v3/garbage-io@ttn/devices/${deviceID}/up`);
   });
@@ -31,10 +31,10 @@ client.on("connect",()=> {
 
 
 
-//RECUPERATION DATAS DU TTN QU'ON ENREGISTRE DS JSON
-//JSON: Liste [], contenant plusieurs Dict. {}(=chaque poubelle)
+//RECOVERING DATA FROM TTN RECORDED BY JSON
+//JSON: List [], containing several Dict. {}(=each bin)
 function SaveData(ID, weight,  quantity, latitude, longitude) {
-  //Données
+  //Datas
   const newTrashData= {
     "ID": ID,
     "Weight": weight,
@@ -51,12 +51,12 @@ function SaveData(ID, weight,  quantity, latitude, longitude) {
           jsonData= [];
         }
       } catch (parseError){
-        console.error("Erreur de parsing JSON:", parseError);
+        console.error("JSON parsing error:", parseError);
         jsonData= [];
       }
     }
 
-    //Mise à jour des données
+    //Update Datas
     const existingIndex= jsonData.findIndex(trash=> trash.ID===ID);
     if (existingIndex>=0){
       jsonData[existingIndex].Weight= weight;
@@ -68,7 +68,7 @@ function SaveData(ID, weight,  quantity, latitude, longitude) {
     }
     fs.writeFile("./public/trashs.json", JSON.stringify(jsonData, null, 4), (err)=> {
       if (err) throw err;
-      console.log("Fichier mis à jour!");
+      console.log("File trashs.json updated!");
     });
   });
 }
@@ -78,7 +78,7 @@ client.on("message", (topic, message)=> {
   const textDecoder= new TextDecoder("utf-8");
   const jsonString= textDecoder.decode(new Uint8Array(message));
   const jsonData= JSON.parse(jsonString);
-  console.log("Données reçues de TTN:", jsonData);
+  console.log("Datas received from TTN:", jsonData);
 
   const ID= jsonData.end_device_ids.device_id;
   const Weight= jsonData.uplink_message.decoded_payload.weight;
@@ -107,7 +107,7 @@ client.on("message", (topic, message)=> {
 
 
 
-//ENVOIE DATAS ROUTE TO TRASHROUTES.JSON
+//SEND DATAS ROUTE TO TRASHROUTES.JSON
 app.use(express.json()); 
 app.post("/saveRoute", (req, res)=> {
   const routeData= req.body;
@@ -129,7 +129,6 @@ app.post("/saveRoute", (req, res)=> {
           console.error("JSON parsing error: ", parseError);
       }
 
-      //News Datas
       jsonData.push(routeData);
 
       fs.writeFile(filePath, JSON.stringify(jsonData, null, 4), (writeErr)=> {
