@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Test TTN</title>
+    <title>Trash Manager</title>
     <!--API SOCKET.IO +GoogleMaps-->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.2.0/socket.io.js"></script>
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAWczO0nzqJmcu5iLtLfWXe8RF9JgnlRyo&callback=initMap&libraries=maps,marker&v=beta" defer></script></script>
@@ -49,7 +49,7 @@
 
             <!--MAP BUTTON-->
             <div class="MapButtonFlex">
-                <button id="MapButton">CIRCUIT CALCULATION</button>
+                <button id="MapButton">PATHWAY CALCULATION</button>
             </div>
         </div>
 
@@ -66,7 +66,7 @@
                         <th>ID Trash</th>    
                         <th>Filling Level</th>                  
                         <th>Weight [kg]</th>
-                        <th>Quantity [m³]</th>
+                        <th>Quantity [cm]</th>
                         <th hidden>Latitude</th>
                         <th hidden>Longitude</th>
                     </tr>
@@ -88,11 +88,12 @@
         <div class="TitleMapFlex">
             <h2>MAP</h2>                
         </div>
+
         <!--MAP-->
         <div id="MapTrash">
         </div>   
 
-       <!--TABLE RESUMANT LA ROUTE AVEC PTS DE PASSAGE-->
+        <!--TABLE SUMMARIZING THE ROUTE WITH WAYPOINTS-->
        <div class="SummaryRoute">
             <table id="TableSummaryRoute">
                 <thead>
@@ -106,6 +107,9 @@
                 </tbody>
             </table>
        </div>
+
+        <!--SEND ROUTE BUTTON-->
+        <button id="SendRouteButton" onclick="SendRouteJSON()">SEND</button>
     </div>
 </div>
 
@@ -129,8 +133,8 @@
                         <td><input type="checkbox" class="component-checkbox"></td>
                         <td>${trash.ID}</td>
                         <td id="LevelfillingTrash${index +1}"></td>
-                        <td id="WeightTrash${index +1}">${trash.Bytes[trash.Bytes.length -1]}</td>
-                        <td id="QuantityTrash${index +1}">${trash.Bytes[trash.Bytes.length -1]}</td>
+                        <td id="WeightTrash${index +1}">${trash.Weight.toFixed(2)}</td>
+                        <td id="QuantityTrash${index +1}">${trash.Quantity}</td>
                         <td id="LatitudeTrash${index +1}" hidden >${trash.Latitude}</td>
                         <td id="LongitudeTrash${index +1}" hidden>${trash.Longitude}</td>`;
                     TableBody.appendChild(row);
@@ -138,8 +142,8 @@
 
                     //GESTION COULEURS (REMPLISSAGE+TEXTE)
                     //Récupération Data Poids et Quantité
-                    const weight= parseFloat(trash.Bytes[trash.Bytes.length -1]);
-                    const quantity= parseFloat(trash.Bytes[trash.Bytes.length -1]);
+                    const weight= parseFloat(trash.Weight);
+                    const quantity= parseFloat(trash.Quantity);
                     const {Levelfilling, Colorfilling, Colortext, highlightWeight, highlightQuantity}= FillingLevel(weight, quantity);
 
                     //Remplissage: % et CouleurFond
@@ -151,12 +155,14 @@
                     const QuantityCell= document.getElementById(`QuantityTrash${index +1}`);                   
                     if (highlightWeight) {
                         WeightCell.style.color= Colortext;
-                    } else {
+                    } 
+                    else {
                         WeightCell.style.color= "green";
                     }
                     if (highlightQuantity) {
                         QuantityCell.style.color= Colortext;
-                    } else {
+                    } 
+                    else {
                         QuantityCell.style.color= "green";
                     }
                 });
@@ -177,40 +183,40 @@
 
                     //SWITCH CASE POUR 0%,50%,75%,100%
                     switch (true) {
-                        //0%: Si Poids<=50 ET Quantité<=50
-                        case (weight<=50 && quantity<=50):
+                        //0%: Si Poids<2,5kg ET Quantité<15
+                        case (weight<2.5 && quantity<15):
                             Levelfilling= "0%";
                             Colorfilling= "green";
                             break;
 
-                        //25%: Si 50<Poids<=100 OU 50<Quantité<=100
-                        case ((weight>50 && weight<=100) || (quantity>50 && quantity<=100)):
+                        //25%: Si 2,5kg<=Poids<5kg OU 15<=Quantité<30
+                        case ((weight>=2.5 && weight<5 && quantity<30) || (quantity>=15 && quantity<30 && weight<5)):
                             Levelfilling= "25%";
                             Colorfilling= "green";
                             break;
 
-                        //50%: Si 100<Poids<=120 OU 100<Quantité<=120
-                        case ((weight>100 && weight<=120) || (quantity>100 && quantity<=120)):
+                        //50%: Si 5kg<=Poids<7,5kg OU 30<=Quantité<45
+                        case ((weight>=5 && weight<7.5 && quantity<45) || (quantity>=30 && quantity<45 && weight<7.5)):
                             Levelfilling= "50%";
                             Colorfilling= "green";
                             break;
 
-                        //75%: Si 120<Poids<=228 OU 120<Quantité<=228
-                        case ((weight>120 && weight<=228) || (quantity>120 && quantity<=228)):
+                        //75%: Si 7.5kg=<Poids<9kg OU 45<=Quantité<54
+                        case ((weight>=7.5 && weight<9 && quantity<54) || (quantity>=45 && quantity<54 && weight<9)):
                             Levelfilling= "75%";
                             Colorfilling= "orange";
                             Colortext= "orange";
-                            highlightWeight= (weight>120 && weight<=228);
-                            highlightQuantity= (quantity>120 && quantity<=228);                         
+                            highlightWeight= (weight>=7.5 && weight<9);
+                            highlightQuantity= (quantity>=45 && quantity<54);                         
                             break;
 
-                        //100%: Si Poids>=228 OU Quantité>228
-                        case (weight>228 || quantity>228):
+                        //100%: Si Poids>=9 OU Quantité>=54
+                        case (weight>=9 || quantity>=54):
                             Levelfilling= "100%";
                             Colorfilling= "red";
                             Colortext= "red";
-                            highlightWeight= (weight>228);
-                            highlightQuantity= (quantity>228);
+                            highlightWeight= (weight>=9);
+                            highlightQuantity= (quantity>=54);
                             break;
 
                         default:
@@ -220,7 +226,7 @@
                     }
                     return {Levelfilling, Colorfilling, Colortext, highlightWeight, highlightQuantity};
                 }
-
+ 
 
 
                 //SELECTION INFOS(WITH CHECKBOX)
@@ -345,6 +351,7 @@
 
             //MAP BUTTON
             document.getElementById("MapButton").addEventListener("click",()=> {
+                document.querySelector(".MapArea").style.display= "block";
                 CalculateRoute();
                 document.querySelector(".TitleMapFlex").scrollIntoView({behavior: "smooth"});
             });
@@ -379,8 +386,8 @@
                 <td>A</td>
                 <td>ECAM</td>
                 <td>Prom. de l'Alma 50, 1200 Woluwe-Saint-Lambert, Belgique</td>
-                <td>50.84858958378759</td>
-                <td>4.458560946485824</td>`;
+                <td hidden>50.84858958378759</td>
+                <td hidden>4.458560946485824</td>`;
             TableSummaryyRoute.appendChild(rowSTART);
 
             //Pts de passage
@@ -398,8 +405,8 @@
                     <td>${letter}</td>
                     <td>${trashID}</td>
                     <td>${address}</td>
-                    <td>${latitude}</td>
-                    <td>${longitude}</td>`;
+                    <td hidden>${latitude}</td>
+                    <td hidden>${longitude}</td>`;
                 TableSummaryyRoute.appendChild(row);
             }
 
@@ -409,10 +416,46 @@
                 <td>${String.fromCharCode(66 +WaypointsOrder.length)}</td>
                 <td>ECAM</td>
                 <td>Prom. de l'Alma 50, 1200 Woluwe-Saint-Lambert, Belgique</td>
-                <td>50.84870475195036</td>
-                <td>4.459306220020603</td>`;
+                <td hidden>50.84870475195036</td>
+                <td hidden>4.459306220020603</td>`;
             TableSummaryyRoute.appendChild(rowEND);
         }
+
+
+
+
+        //FCT SEND ROUTE +TIME TO TRASHROUTES.JSON
+        function SendRouteJSON() {
+            const TableRows= document.querySelectorAll("#TableBodyy tr");
+            const RouteData= [];
+
+            TableRows.forEach(row=> {
+                const cells= row.querySelectorAll("td");
+                RouteData.push({
+                    letter: cells[0].innerText,
+                    id: cells[1].innerText,
+                    address: cells[2].innerText,
+                    latitude: cells[3]?.innerText,
+                    longitude: cells[4]?.innerText
+                });
+            });
+            const currentDate= new Date();
+            const dataToSend= {
+                timestamp: currentDate.toISOString(),
+                route: RouteData
+            };
+
+
+            fetch("/saveRoute",{
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify(dataToSend)
+            })
+            .then(response=> response.text())
+            .then(message=> alert(message))
+            .catch(error=> console.error("Error while sending data", error));
+        }
+
     </script>
 </body>
 </html>
