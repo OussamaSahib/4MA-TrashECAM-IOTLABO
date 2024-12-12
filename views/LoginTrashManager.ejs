@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login TrashManager</title>
+    <link rel="stylesheet" href ="./css/style.css">
+    <link rel="stylesheet" href ="./css/style_trashmanager.css">
+</head>
+<body>
+    <!--TITLE AREA-->
+   <div class="TitleArea">
+        <!-- IMAGE BACK -->
+        <div class="ButtonBackFlex">
+            <img src="/image/buttonback.png" alt="Button Back" onclick="location.href='/'"/>
+        </div>
+        
+        <!--TITLE-->
+        <div class="TitleFlex">
+            <h1>TRASH MANAGER</h1>                
+        </div>
+    </div>
+
+
+
+    <!--LOGIN AREA-->
+    <div class="LoginArea">        
+        <div class="LoginFlex">
+            <!--TITLE-->
+            <label for="Password">PASSWORD</label>
+
+            <!--INPUT PASSWORD WITH MASK PASSWORD BUTTON +LOGIN BUTTON-->
+            <div class="Input_ButtonFlex">
+                <div class="PasswordFlex">
+                    <input id="Password" type="password" placeholder="Enter password" />
+                    <img id="MaskPasswordButton" src="/image/PasswordMasked.png" alt="Password visibility" />
+                </div>
+
+                <button id="LoginButton">LOG IN</button>
+            </div>
+
+            <!--ERROR MESSAGE-->
+            <p id="ErrorMessage"></p>
+        </div>  
+    </div>
+
+
+
+
+    <script>
+        //LOGIN (-->PASSWORD +ERROR MESSAGE)
+        document.getElementById("LoginButton").addEventListener("click", function (){
+            const Password= "1234";
+            const PasswordInput= document.getElementById("Password");
+            const ErrorMessage= document.getElementById("ErrorMessage");
+
+            //If Password OK: Go to TrahsManager Page |Else: Error Message
+            if (PasswordInput.value===Password){
+                window.location.href= "/trashmanager";
+            } 
+            else{
+                PasswordInput.style.border= "2px solid red";
+                ErrorMessage.textContent= "Incorrect password! Please try again.";
+                ErrorMessage.style.display= "block";
+            }
+        });
+
+        //IF ERROR MESSAGE: RESET THE ERROR DISPLAY WHEN TYPING AGAIN
+        document.getElementById("Password").addEventListener("input", function(){
+            this.style.border= ""; 
+            document.getElementById("ErrorMessage").style.display= "none";
+        });
+
+
+
+        //MASK PASSWORD BUTTON
+        document.getElementById("MaskPasswordButton").addEventListener("click", function(){
+            const PasswordInput= document.getElementById("Password");
+            const PasswordHidden= PasswordInput.getAttribute("type")==="password";
+
+            PasswordInput.setAttribute("type", PasswordHidden ?"text":"password");
+            this.src= PasswordHidden ?"/image/PasswordUnMasked.png":"/image/PasswordMasked.png";
+        });
+
+    </script>
+</body>
+</html>

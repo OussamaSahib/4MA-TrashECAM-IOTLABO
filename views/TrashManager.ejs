@@ -16,7 +16,7 @@
    <div class="TitleArea">
         <!-- IMAGE BACK -->
         <div class="ButtonBackFlex">
-            <img src="/image/buttonback.png" alt="Button Back" onclick="location.href='/'"/>
+            <img src="/image/buttonback.png" alt="Button Back" onclick="location.href='/logintrashmanager'"/>
         </div>
         
         <!--TITLE-->
@@ -131,12 +131,12 @@
         //LOAD DATA TRASHS FROM JSON
         fetch("/trashs.json")
             .then(response=> response.json())
-            .then(data=> {
+            .then(data=>{
                 console.log(data)
 
                 //IN TABLE TRASHS: 1ROW= EACH TRASH OF TRASHS.JSON
                 const TableBody= document.getElementById("TableBody");
-                data.forEach((trash, index)=> {
+                data.forEach((trash, index)=>{
                     //DISPLAY DATAS
                     const row= document.createElement("tr");
                     row.innerHTML= `
@@ -193,7 +193,7 @@
                     let highlightQuantity= false;
 
                     //SWITCH CASE: 0%,25%,50%,75%,100%
-                    switch (true) {
+                    switch (true){
                         //0%: Weight<2,5kg AND Quantity<15L
                         case (weight<2.5 && quantity<15):
                             Levelfilling= "0%";
@@ -243,10 +243,10 @@
                 //SELECTION INFOS(WITH CHECKBOX)
                 //CHECKBOX
                 //ALL CHECKBOX
-                document.getElementById("selectAllCheckbox").addEventListener("change",function() {
+                document.getElementById("selectAllCheckbox").addEventListener("change",function(){
                     const isChecked= this.checked;
                     //Check-Uncheck all the table checkbox
-                    document.querySelectorAll(".component-checkbox").forEach(checkbox=> {
+                    document.querySelectorAll(".component-checkbox").forEach(checkbox=>{
                         checkbox.checked= isChecked;
                     });
                     //If AllCheckbox checked: Check off RedCheckbox
@@ -257,17 +257,17 @@
                 });
              
                 //RED CHECKBOX
-                document.getElementById("selectRedCheckbox").addEventListener("change",function() {
+                document.getElementById("selectRedCheckbox").addEventListener("change",function(){
                     const isRedChecked= this.checked;
                     //1)If AllCheckbox checked: Uncheck AllCheckbox +All checkbox of the table
                     if (isRedChecked && document.getElementById("selectAllCheckbox").checked){
                         document.getElementById("selectAllCheckbox").checked= false;
-                        document.querySelectorAll(".component-checkbox").forEach(checkbox=> {
+                        document.querySelectorAll(".component-checkbox").forEach(checkbox=>{
                             checkbox.checked= false;
                         });
                     }
                     //2)Check-Uncheck the checkbox at 100% filling of the table
-                    document.querySelectorAll(".component-checkbox").forEach((checkbox, index)=> {
+                    document.querySelectorAll(".component-checkbox").forEach((checkbox, index)=>{
                         const levelCell= document.querySelector(`#LevelfillingTrash${index +1}`);                      
                         if (levelCell && levelCell.innerText==="100%"){
                             checkbox.checked= isRedChecked;
@@ -284,11 +284,11 @@
                 document.getElementById("TotalTrash").innerText= document.querySelectorAll(".component-checkbox").length;
 
                 //SELECTED TRASH
-                function UpdateSelectedCount() {
+                function UpdateSelectedCount(){
                     const selectedCount= document.querySelectorAll(".component-checkbox:checked").length;
                     document.getElementById("SelectedTrash").innerText= selectedCount;
                 }
-                document.querySelectorAll(".component-checkbox").forEach(checkbox=> {
+                document.querySelectorAll(".component-checkbox").forEach(checkbox=>{
                     checkbox.addEventListener("change",UpdateSelectedCount);
                 });
                 UpdateSelectedCount();
@@ -302,8 +302,8 @@
 
         //MAP WITH ROUTE
         //FCT MAP
-        function initMap() {
-            const Map= new google.maps.Map(document.getElementById("MapTrash"), {
+        function initMap(){
+            const Map= new google.maps.Map(document.getElementById("MapTrash"),{
                 zoom: 13,
                 //By default: Bruxelles
                 center: {lat: 50.8466, lng: 4.3528}, 
@@ -332,7 +332,7 @@
             //FCT: Selected Trashs= WaysPoints
             function SelectedWaypoints() {
                 const Waypoints= [];
-                document.querySelectorAll(".component-checkbox:checked").forEach((checkbox)=> {
+                document.querySelectorAll(".component-checkbox:checked").forEach((checkbox)=>{
                     const row= checkbox.closest("tr");
                     const latitude= parseFloat(row.querySelector(`#LatitudeTrash${row.rowIndex}`).innerText);
                     const longitude= parseFloat(row.querySelector(`#LongitudeTrash${row.rowIndex}`).innerText);
@@ -342,7 +342,7 @@
             }
 
             //FCT: Route calculation through selected Trashs
-            function CalculateRoute() {
+            function CalculateRoute(){
                 const WayPoints= SelectedWaypoints();       
                 directionsService.route({
                     origin: Start,
@@ -350,7 +350,8 @@
                     waypoints: WayPoints,
                     optimizeWaypoints: true,
                     travelMode: google.maps.TravelMode.DRIVING
-                }, (response,status)=> {
+                }, 
+                (response,status)=>{
                     if (status===google.maps.DirectionsStatus.OK){
                         directionsRenderer.setDirections(response);
                         TableSummaryRoute(response);
@@ -362,7 +363,7 @@
             }
 
             //MAP BUTTON
-            document.getElementById("MapButton").addEventListener("click",()=> {
+            document.getElementById("MapButton").addEventListener("click",()=>{
                 document.querySelector(".MapArea").style.display= "block";
                 CalculateRoute();
                 document.querySelector(".TitleMapFlex").scrollIntoView({behavior: "smooth"});
@@ -375,7 +376,7 @@
 
         
         //FCT COORDINATES-->ADDRESS
-        async function Address(lat, lng) {
+        async function Address(lat, lng){
             const response= await fetch(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=AIzaSyAWczO0nzqJmcu5iLtLfWXe8RF9JgnlRyo`);
             const data= await response.json();
             if (data.status==="OK"){
@@ -389,7 +390,7 @@
 
 
         //FCT TABLE SUMMARIZING THE ROUTE WITH WAYPOINTS
-        async function TableSummaryRoute(response) {
+        async function TableSummaryRoute(response){
             const TableSummaryyRoute= document.getElementById("TableBodyy");
             TableSummaryyRoute.innerHTML= "";
 
@@ -438,11 +439,11 @@
 
 
         //FCT SEND ROUTE +TIME TO TRASHROUTES.JSON
-        function SendRouteJSON() {
+        function SendRouteJSON(){
             const TableRows= document.querySelectorAll("#TableBodyy tr");
             const RouteData= [];
 
-            TableRows.forEach(row=> {
+            TableRows.forEach(row=>{
                 const cells= row.querySelectorAll("td");
                 RouteData.push({
                     letter: cells[0].innerText,

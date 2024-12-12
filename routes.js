@@ -8,6 +8,11 @@ router.get("/", (req,res)=>
     res.render("Home.ejs");
 });
 
+//ROUTE TO "LoginTrashManager.ejs"
+router.get("/logintrashmanager", (req, res) => {
+    res.render("LoginTrashManager.ejs");
+});
+
 //ROUTE TO "TrashManager.ejs"
 router.get("/trashmanager", (req, res) => {
     res.render("TrashManager.ejs");
