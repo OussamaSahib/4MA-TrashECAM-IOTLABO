@@ -9,10 +9,16 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.2.0/socket.io.js"></script>
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAWczO0nzqJmcu5iLtLfWXe8RF9JgnlRyo&callback=initMap&libraries=maps,marker&v=beta" defer></script></script>
     <link rel="stylesheet" href ="./css/style.css">
+    <link rel="stylesheet" href ="./css/style_trashmanager.css">
 </head>
 <body>
    <!--TITLE AREA-->
    <div class="TitleArea">
+        <!-- IMAGE BACK -->
+        <div class="ButtonBackFlex">
+            <img src="/image/buttonback.png" alt="Button Back" onclick="location.href='/'"/>
+        </div>
+        
         <!--TITLE-->
         <div class="TitleFlex">
             <h1>TRASH MANAGER</h1>                
@@ -66,7 +72,7 @@
                         <th>ID Trash</th>    
                         <th>Filling Level</th>                  
                         <th>Weight [kg]</th>
-                        <th>Quantity [cm]</th>
+                        <th>Quantity [L]</th>
                         <th hidden>Latitude</th>
                         <th hidden>Longitude</th>
                     </tr>
@@ -93,23 +99,28 @@
         <div id="MapTrash">
         </div>   
 
-        <!--TABLE SUMMARIZING THE ROUTE WITH WAYPOINTS-->
-       <div class="SummaryRoute">
-            <table id="TableSummaryRoute">
-                <thead>
-                    <tr>
-                        <th id="thletter"></th>
-                        <th>ID</th>
-                        <th>Address</th>
-                    </tr>
-                </thead>
-                <tbody id="TableBodyy">
-                </tbody>
-            </table>
-       </div>
+        <!--TABLE ROUTE +BUTTON SEND ROUTE-->
+        <div class="SummaryRouteAndSendRoute">
+            <!--TABLE SUMMARIZING THE ROUTE WITH WAYPOINTS-->
+            <div class="SummaryRouteFlex">
+                    <table id="TableSummaryRoute">
+                        <thead>
+                            <tr>
+                                <th id="thletter"></th>
+                                <th>ID</th>
+                                <th>Address</th>
+                            </tr>
+                        </thead>
+                        <tbody id="TableBodyy">
+                        </tbody>
+                    </table>
+            </div>
 
-        <!--SEND ROUTE BUTTON-->
-        <button id="SendRouteButton" onclick="SendRouteJSON()">SEND</button>
+            <!--SEND ROUTE BUTTON-->
+            <div class class="SendRouteButtonFlex">
+                <button id="SendRouteButton" onclick="SendRouteJSON()">SEND</button>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -130,11 +141,11 @@
                     const row= document.createElement("tr");
                     row.innerHTML= `
                         <td id="tdnumber">${index +1}</td>
-                        <td><input type="checkbox" class="component-checkbox"></td>
+                        <td id="tdcheckbox"><input type="checkbox" class="component-checkbox"></td>
                         <td>${trash.ID}</td>
                         <td id="LevelfillingTrash${index +1}"></td>
                         <td id="WeightTrash${index +1}">${trash.Weight.toFixed(2)}</td>
-                        <td id="QuantityTrash${index +1}">${trash.Quantity}</td>
+                        <td id="QuantityTrash${index +1}">${trash.Quantity.toFixed(2)}</td>
                         <td id="LatitudeTrash${index +1}" hidden >${trash.Latitude}</td>
                         <td id="LongitudeTrash${index +1}" hidden>${trash.Longitude}</td>`;
                     TableBody.appendChild(row);
@@ -183,26 +194,26 @@
 
                     //SWITCH CASE: 0%,25%,50%,75%,100%
                     switch (true) {
-                        //0%: Weight<2,5kg AND Quantity<15cm
+                        //0%: Weight<2,5kg AND Quantity<15L
                         case (weight<2.5 && quantity<15):
                             Levelfilling= "0%";
                             Colorfilling= "green";
                             break;
 
-                        //25%: 2,5kg<=Weight<5kg OR 15cm<=Quantity<30cm
+                        //25%: 2,5kg<=Weight<5kg OR 15L<=Quantity<30L
                         case ((weight>=2.5 && weight<5 && quantity<30) || (quantity>=15 && quantity<30 && weight<5)):
                             Levelfilling= "25%";
                             Colorfilling= "green";
                             break;
 
-                        //50%: 5kg<=Weight<7,5kg OR 30cm<=Quantity<45cm
+                        //50%: 5kg<=Weight<7,5kg OR 30L<=Quantity<45L
                         case ((weight>=5 && weight<7.5 && quantity<45) || (quantity>=30 && quantity<45 && weight<7.5)):
                             Levelfilling= "50%";
                             Colorfilling= "green";
                             break;
 
-                        //75%: 7.5kg=<Weight<9kg OR 45cm<=Quantity<54cm
-                        case ((weight>=7.5 && weight<9 && quantity<54) || (quantity>=45 && quantity<54 && weight<9)):
+                        //75%: 7.5kg=<Weight<8.5kg OR 45L<=Quantity<54L
+                        case ((weight>=7.5 && weight<8.5 && quantity<54) || (quantity>=45 && quantity<54 && weight<9)):
                             Levelfilling= "75%";
                             Colorfilling= "orange";
                             Colortext= "orange";
@@ -210,8 +221,8 @@
                             highlightQuantity= (quantity>=45 && quantity<54);                         
                             break;
 
-                        //100%: Weight>=9kg OR Quantity>=54cm
-                        case (weight>=9 || quantity>=54):
+                        //100%: Weight>=8.5kg OR Quantity>=54L
+                        case (weight>=8.5 || quantity>=54):
                             Levelfilling= "100%";
                             Colorfilling= "red";
                             Colortext= "red";
@@ -371,7 +382,7 @@
                 return data.results[0].formatted_address;
             } 
             else{
-                console.error("Erreur Address: ", data.status);
+                console.error("Error Address: ", data.status);
                 return "Address not found";
             }
         }
@@ -385,9 +396,9 @@
             //Departure(ECAM) 
             const rowSTART= document.createElement("tr");
             rowSTART.innerHTML= `
-                <td>A</td>
-                <td>ECAM</td>
-                <td>Promenade de l'Alma 50, 1200 Woluwe-Saint-Lambert, Belgique</td>
+                <td class="tdletter">A</td>
+                <td class="tdstart">ECAM</td>
+                <td class="tdstart">Prom. de l'Alma 50, 1200 Woluwe-Saint-Lambert, Belgique</td>
                 <td hidden>50.84858958378759</td>
                 <td hidden>4.458560946485824</td>`;
             TableSummaryyRoute.appendChild(rowSTART);
@@ -404,7 +415,7 @@
                 const address= await Address(latitude, longitude);
                 let row= document.createElement("tr");
                 row.innerHTML= `
-                    <td>${letter}</td>
+                    <td class="tdletter">${letter}</td>
                     <td>${trashID}</td>
                     <td>${address}</td>
                     <td hidden>${latitude}</td>
@@ -415,9 +426,9 @@
             //Arrival(ECAM)
             const rowEND= document.createElement("tr");
             rowEND.innerHTML= `
-                <td>${String.fromCharCode(66 +WaypointsOrder.length)}</td>
-                <td>ECAM</td>
-                <td>Promenade de l'Alma 50, 1200 Woluwe-Saint-Lambert, Belgique</td>
+                <td class="tdletter">${String.fromCharCode(66 +WaypointsOrder.length)}</td>
+                <td class="tdend">ECAM</td>
+                <td class="tdend">Prom. de l'Alma 50, 1200 Woluwe-Saint-Lambert, Belgique</td>
                 <td hidden>50.84870475195036</td>
                 <td hidden>4.459306220020603</td>`;
             TableSummaryyRoute.appendChild(rowEND);
@@ -443,7 +454,7 @@
             });
             const currentDate= new Date();
             const dataToSend= {
-                timestamp: currentDate.toISOString(),
+                time: currentDate.toISOString(),
                 route: RouteData
             };
 

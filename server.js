@@ -148,6 +148,6 @@ app.post("/saveRoute", (req, res)=> {
 
 //METHODE LISTEN
 server.listen(3000,()=> {
-  console.log("Serveur en écoute sur le port 3000");
+  console.log("Server listening on port 3000");
 });
 
