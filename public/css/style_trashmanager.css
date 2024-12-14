@@ -39,7 +39,7 @@ margin: 0%;}
     font-size: 3.6rem;
     font-weight: bold;
     text-decoration: underline;
-    margin: 0;}
+    margin: 0px;}
 
 
 
@@ -114,7 +114,10 @@ flex-direction: column;}
             border: none;
             border-radius: 5px;
             cursor: pointer;
-            padding: 10px 20px;
+            padding-top: 10px;
+            padding-bottom: 10px;
+            padding-left: 20px;
+            padding-right: 20px;            
             margin-left: 35px;}
 
             #LoginButton:hover 
@@ -406,9 +409,98 @@ display: none;}
         font-weight: bold;
         border: none;
         border-radius: 5px;
-        padding: 10px 20px;}
+        padding-top: 10px;
+        padding-bottom: 10px;
+        padding-left: 20px;
+        padding-right: 20px;}
 
         #SendRouteButton:hover 
         {background-color: rgb(1, 177, 177);
         cursor: pointer;}
 
+
+
+
+
+/*POPUP AREA*/
+.PopupArea
+{display: flex;
+justify-content: center;
+align-items: center;
+position: fixed;
+top: 0;
+left: 0;
+background: rgba(0, 0, 0, 0.7);
+width: 100%;
+height: 100%;}
+
+.hidden 
+{display: none;}
+
+    /*INSIDE POPUP*/
+    .PopupFlex
+    {position: relative;
+    background: rgb(193, 193, 193);
+    border-radius: 10px;
+    text-align: center;
+    width: 90%;
+    max-width: 550px;
+    padding: 20px;
+    padding-bottom: 13px;}
+
+        /*SUCCES ICON*/
+        .SuccessIcon 
+        {display: flex;
+        justify-content: center;
+        align-items: center;
+        position: absolute;
+        top: -35px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 70px;
+        height: 70px;}
+
+        .SuccessIcon img 
+        {width: 50px;
+        height: 50px;}
+
+
+        /*TITLE*/
+        .PopupFlex h2 
+        {color: #333;
+        font-size: 1.8rem;
+        font-weight: bold;
+        white-space: nowrap;
+        margin: 0px;
+        margin-top: 30px;
+        margin-bottom: 9.5px;}
+
+
+        /*TEXT*/
+        .PopupFlex p 
+        {color: #555;
+        font-size: 1rem;
+        margin: 0;
+        margin-top: 10px;
+        margin-bottom: 10px;}
+
+
+        /*CLOSE-POPUP BUTTON*/
+        #ClosePopupButton 
+        {background-color: #03d603;
+        color: white;
+        font-size: 1rem;
+        font-weight: bold;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        padding-top: 10px;
+        padding-bottom: 10px;
+        padding-left: 20px;
+        padding-right: 20px;
+        margin-top: 30px;}
+
+        #ClosePopupButton:hover 
+        {background-color: #009900;}
+
+        

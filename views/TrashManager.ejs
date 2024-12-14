@@ -124,7 +124,17 @@
     </div>
 </div>
 
-
+<!--POP-UP AREA-->
+<div class="PopupArea hidden">
+    <div class="PopupFlex">
+        <div class="SuccessIcon">
+            <img src="/image/SuccessRoute.png" alt="Success">
+        </div>
+        <h2>ROUTE SENT SUCCESSFULLY!</h2>
+        <p>Your route has been sent to the Trash Collector. Thank you!</p>
+        <button id="ClosePopupButton">OK</button>
+    </div>
+</div>
 
 
     <script>
@@ -466,7 +476,17 @@
                 body: JSON.stringify(dataToSend)
             })
             .then(response=> response.text())
-            .then(message=> alert(message))
+            .then(()=>{
+            //SHOW POPUP
+            const PopupArea= document.querySelector(".PopupArea");
+            PopupArea.classList.remove("hidden");
+
+            //BUTTON "OK" CLOSING THE POPUP
+            const ClosePopupButton= document.getElementById("ClosePopupButton");
+            ClosePopupButton.addEventListener("click",()=>{
+                PopupArea.classList.add("hidden");
+            });
+        })
             .catch(error=> console.error("Error while sending data", error));
         }
 
