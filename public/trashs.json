@@ -1,14 +1,16 @@
 [
     {
         "ID": "adafruit-feather-m0",
-        "Bytes": [
-            160
-        ]
+        "Weight": 0.00017578125,
+        "Quantity": 52.2,
+        "Latitude": 50.8501550086797,
+        "Longitude": 4.44835952720301
     },
     {
         "ID": "adafruit-feather-m1",
-        "Bytes": [
-            229
-        ]
+        "Weight": 1.5,
+        "Quantity": 10,
+        "Latitude": 50.8314524670148,
+        "Longitude": 4.43949376187183
     }
 ]
