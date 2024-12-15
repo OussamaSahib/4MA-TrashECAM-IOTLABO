@@ -6,8 +6,177 @@
     <title>Trash Collector</title>
     <link rel="stylesheet" href ="./css/style.css">
     <link rel="stylesheet" href ="./css/style_trashcollector.css">
+    <!--API SOCKET.IO +GoogleMaps-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.2.0/socket.io.js"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAWczO0nzqJmcu5iLtLfWXe8RF9JgnlRyo&callback=initMap&libraries=maps,marker&v=beta" defer></script></script>
 </head>
 <body>
-    ZLATAN IBRAHIMOVIC
+    <!--TITLE AREA-->
+   <div class="TitleArea">
+        <!--IMAGE BACK-->
+        <div class="ButtonBackFlex">
+            <img src="/image/buttonback.png" alt="Button Back" onclick="location.href='/'"/>
+        </div>
+        
+        <!--TITLE-->
+        <div class="TitleFlex">
+            <h1>TRASH COLLECTOR</h1>                
+        </div>
+    </div>
+
+
+
+    <!--MAP AREA-->
+    <div class="MapArea">
+        <!--TITLE (WITH CURRENT DAY)-->
+        <div class="TitleMapFlex">
+            <h2></h2>
+        </div>
+    
+        <!--MAP-->
+        <div id="MapTrash"></div>
+    
+        <!--TABLE ROUTE-->
+        <div class="SummaryRouteAndSendRoute">
+            <!--TABLE SUMMARIZING THE ROUTE WITH WAYPOINTS-->
+            <div class="SummaryRouteFlex">
+                <table id="TableSummaryRoute">
+                    <thead>
+                        <tr>
+                            <th id="thletter"></th>
+                            <th>ID</th>
+                            <th>Address</th>
+                        </tr>
+                    </thead>
+                    <tbody id="TableBodyy"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+
+
+
+<script>
+    window.addEventListener("load", function(){
+        //LOAD DATA ROUTES FROM JSON
+        fetch("/trashsroutes.json")
+            .then((response)=> response.json())
+            .then((data)=>{
+
+                //TODAY'S DATE(-->ISO format for logic +European format for display)
+                const TodayUnFormatted= new Date();
+                
+                const TodayISO= TodayUnFormatted.toISOString().split("T")[0];
+                const Day= String(TodayUnFormatted.getDate()).padStart(2, '0');
+                const Month= String(TodayUnFormatted.getMonth() + 1).padStart(2, '0');
+                const Year= TodayUnFormatted.getFullYear();
+                const TodayFormatted= `${Day}-${Month}-${Year}`;
+
+
+                //JSON: FILTER THE DATA FOR TODAY'S DATE
+                const TodayRoutes= data.filter((entry)=> entry.time.startsWith(TodayISO));
+
+                //IF MIN 1 ROUTE FOR TODAY
+                if (TodayRoutes.length>0){
+                    //Update Title with Today's Date
+                    const TitleDate= document.querySelector(".TitleMapFlex h2");
+                    TitleDate.innerText= `${TodayFormatted}`;
+                    
+                    //If Several routes for today, take the Most Recent Route
+                    const MostRecentRoute= TodayRoutes.sort((a, b)=> new Date(b.time)-new Date(a.time))[0];
+
+                    //FCTS MAP+TABLE SUMMARIZING THE ROUTE
+                    initMap(MostRecentRoute.route);
+                    TableSummaryRoute(MostRecentRoute.route);
+                } 
+                else{
+                    alert("No route found for today.");
+                }
+            })
+            .catch((error)=> console.error("Error while loading data: ",error));
+    });
+
+
+
+
+    //MAP WITH ROUTE
+    //FCT MAP
+    function initMap(route){
+        const Map= new google.maps.Map(document.getElementById("MapTrash"),{
+            zoom: 13,
+            //By default: Bruxelles
+            center: {lat: 50.8466, lng: 4.3528},
+            //Remove Shops
+            styles: [
+                {featureType: "poi",
+                stylers: [{ visibility: "off" }]}
+            ],
+        });
+        //Path+Drawing of the path
+        const DirectionsService= new google.maps.DirectionsService();
+        const DirectionsRenderer= new google.maps.DirectionsRenderer({
+            polylineOptions: {
+                strokeColor: "rgba(70, 0, 205, 0.6)",
+                strokeWeight: 6,
+            },
+        });
+        DirectionsRenderer.setMap(Map);
+
+        //WaysPoints(=Trahs)
+        const Waypoints= route.slice(1,-1).map((point)=>({
+            location: {lat: parseFloat(point.latitude), lng: parseFloat(point.longitude)},
+            stopover: true,
+        }));
+
+        //Route calculation through selected Trashs
+        DirectionsService.route(
+            {
+                origin: {
+                    lat: parseFloat(route[0].latitude),
+                    lng: parseFloat(route[0].longitude),
+                },
+                destination: {
+                    lat: parseFloat(route[route.length-1].latitude),
+                    lng: parseFloat(route[route.length-1].longitude),
+                },
+                waypoints: Waypoints,
+                optimizeWaypoints: false,
+                travelMode: google.maps.TravelMode.DRIVING,
+            },
+            (response, status)=>{
+                if (status===google.maps.DirectionsStatus.OK){
+                    DirectionsRenderer.setDirections(response);
+                } 
+                else{
+                    console.error("Error Route:" +status);
+                }
+            }
+        );
+    }
+
+
+
+    //FCT TABLE SUMMARIZING THE ROUTE WITH WAYPOINTS
+    function TableSummaryRoute(route){
+        const TableSummaryyRoute= document.getElementById("TableBodyy");
+        TableSummaryyRoute.innerHTML= "";
+
+        route.forEach((point, index)=>{
+            const row= document.createElement("tr");
+
+            ////Departure +Arrival
+            const Start= index===0;
+            const End= index===route.length-1;
+            //All Waypoints (If Start or End: Specific CSS Background)
+            row.innerHTML= `
+                <td class="tdletter">${point.letter}</td>
+                <td class="${Start?'tdstart' : End?'tdend': ''}">${point.id}</td>
+                <td class="${Start?'tdstart' : End?'tdend': ''}">${point.address}</td>`;
+            TableSummaryyRoute.appendChild(row);
+        });
+    }
+
+</script>
 </body>
 </html>

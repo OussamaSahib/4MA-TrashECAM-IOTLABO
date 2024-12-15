@@ -1,0 +1,151 @@
+/*TRASHCOLLECTOR PAGE*/
+/*TITLE AREA*/
+.TitleArea 
+{display: flex;
+align-items: center;
+position: relative; 
+background-color: rgba(18, 18, 20, 0.922);
+height: auto;
+padding: 2%;
+padding-top: 0.5%;
+padding-bottom: 1%;
+margin: 0%;}
+
+    /*BUTTON BACK*/
+    .ButtonBackFlex 
+    {display: flex;
+    position: absolute;
+    align-items: center;
+    left: 10px;
+    width: 75px;
+    height: 75px;
+    cursor: pointer;}
+
+    .ButtonBackFlex img 
+    {object-fit: contain;
+    width: 100%;
+    height: 100%;}
+
+
+    /*TITLE*/
+    .TitleFlex 
+    {display: flex;
+    flex: 1;
+    justify-content: center;
+    align-items: center;
+    text-align: center;}
+
+    h1 
+    {color: white;
+    font-size: 3.6rem;
+    font-weight: bold;
+    text-decoration: underline;
+    margin: 0px;}
+
+
+  
+       
+     
+       
+/*MAP AREA*/
+.MapArea
+{display: flex;
+flex-direction: column;
+margin: 2%;
+margin-top: 2%;}
+
+    /*TITLE*/
+    .TitleMapFlex
+    {display: flex;
+    flex-direction: row;
+    justify-content: left;}
+
+    h2
+    {color:white;
+    font-size: 250%;
+    font-weight: bold;
+    text-decoration: underline;
+    margin-top: 0%;
+    margin-bottom: 0%;}
+
+
+    /*MAP*/
+    #MapTrash
+    {width: 95%;
+    height: 450px;}
+
+
+
+    
+    /*TABLE ROUTE*/
+    .SummaryRouteAndSendRoute
+    {display: flex;
+    flex-direction: row; 
+    align-items: flex-start; 
+    gap: 0px;
+    margin-top: 2%;}
+
+        /*TABLE SUMMARIZING THE ROUTE WITH WAYPOINTS*/
+        .SummaryRouteFlex
+        {display: flex;
+        flex-direction: column;
+        width: 95%;
+        margin-right: 15px;}
+
+            #TableSummaryRoute
+            {border-collapse: collapse;}
+
+            #TableSummaryRoute
+            {width: 100%;}
+            #TableSummaryRoute th:first-child, .SummaryRouteFlex td:first-child 
+            {width: 8%;}
+            #TableSummaryRoute th:nth-child(2), .SummaryRouteFlex td:nth-child(2) 
+            {width: 30%;}
+            #TableSummaryRoute th:nth-child(3), .SummaryRouteFlex td:nth-child(3) 
+            {width: 80%;}
+
+            th, td
+            {color:white;
+            border: 0.22em rgb(161, 161, 161) solid;}
+
+            th
+            {background-color:rgb(0, 0, 0);
+            font-size: 150%;
+            font-weight: bold;
+            text-align: center;
+            padding-left: 20px;
+            padding-right: 20px;
+            padding-top: 5px;
+            padding-bottom: 5px;}
+
+            #thletter
+            {background-color:rgb(50, 50, 58);
+            border:none}
+
+            td
+            {background-color:rgba(27, 27, 29, 0.922);
+            font-size: 130%;
+            text-align: center;
+            padding-left: 10px;
+            padding-right: 10px;
+            padding-top: 5px;
+            padding-bottom: 5px;}
+
+            .tdletter
+            {background-color:rgb(0, 0, 0);
+            font-weight: bold;}
+
+            .tdstart
+            {background-color:rgb(53, 87, 35)}
+
+            .tdend
+            {background-color:rgb(132, 7, 5)}
+
+
+
+
+
+
+
+
+   

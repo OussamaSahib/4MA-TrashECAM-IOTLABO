@@ -524,5 +524,102 @@
                 "longitude": "4.459306220020603"
             }
         ]
+    },
+    {
+        "time": "2024-12-14T13:52:11.801Z",
+        "route": [
+            {
+                "letter": "A",
+                "id": "ECAM",
+                "address": "Prom. de l'Alma 50, 1200 Woluwe-Saint-Lambert, Belgique",
+                "latitude": "50.84858958378759",
+                "longitude": "4.458560946485824"
+            },
+            {
+                "letter": "B",
+                "id": "ECAM",
+                "address": "Prom. de l'Alma 50, 1200 Woluwe-Saint-Lambert, Belgique",
+                "latitude": "50.84870475195036",
+                "longitude": "4.459306220020603"
+            }
+        ]
+    },
+    {
+        "time": "2024-12-14T13:57:52.446Z",
+        "route": [
+            {
+                "letter": "A",
+                "id": "ECAM",
+                "address": "Prom. de l'Alma 50, 1200 Woluwe-Saint-Lambert, Belgique",
+                "latitude": "50.84858958378759",
+                "longitude": "4.458560946485824"
+            },
+            {
+                "letter": "B",
+                "id": "adafruit-feather-m1",
+                "address": "Av. Edmond Parmentier 68, 1150 Woluwe-Saint-Pierre, Belgique",
+                "latitude": "50.8314524670148",
+                "longitude": "4.43949376187183"
+            },
+            {
+                "letter": "C",
+                "id": "ECAM",
+                "address": "Prom. de l'Alma 50, 1200 Woluwe-Saint-Lambert, Belgique",
+                "latitude": "50.84870475195036",
+                "longitude": "4.459306220020603"
+            }
+        ]
+    },
+    {
+        "time": "2024-12-14T17:05:06.747Z",
+        "route": [
+            {
+                "letter": "A",
+                "id": "ECAM",
+                "address": "Prom. de l'Alma 50, 1200 Woluwe-Saint-Lambert, Belgique",
+                "latitude": "50.84858958378759",
+                "longitude": "4.458560946485824"
+            },
+            {
+                "letter": "B",
+                "id": "adafruit-feather-m0",
+                "address": "Av. Konrad Adenauer 3, 1200 Woluwe-Saint-Lambert, Belgique",
+                "latitude": "50.8501550086797",
+                "longitude": "4.44835952720301"
+            },
+            {
+                "letter": "C",
+                "id": "ECAM",
+                "address": "Prom. de l'Alma 50, 1200 Woluwe-Saint-Lambert, Belgique",
+                "latitude": "50.84870475195036",
+                "longitude": "4.459306220020603"
+            }
+        ]
+    },
+    {
+        "time": "2024-12-15T21:57:52.901Z",
+        "route": [
+            {
+                "letter": "A",
+                "id": "ECAM",
+                "address": "Prom. de l'Alma 50, 1200 Woluwe-Saint-Lambert, Belgique",
+                "latitude": "50.84858958378759",
+                "longitude": "4.458560946485824"
+            },
+            {
+                "letter": "B",
+                "id": "adafruit-feather-m0",
+                "address": "Av. Konrad Adenauer 3, 1200 Woluwe-Saint-Lambert, Belgique",
+                "latitude": "50.8501550086797",
+                "longitude": "4.44835952720301"
+            },
+            {
+                "letter": "C",
+                "id": "ECAM",
+                "address": "Prom. de l'Alma 50, 1200 Woluwe-Saint-Lambert, Belgique",
+                "latitude": "50.84870475195036",
+                "longitude": "4.459306220020603"
+            }
+        ]
     }
 ]
