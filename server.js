@@ -113,7 +113,6 @@ app.post("/saveRoute", (req, res)=> {
   const routeData= req.body;
   const filePath= "./public/trashsroutes.json";
 
-
   fs.readFile(filePath, "utf8", (err, data)=> {
       if (err){
           console.error("Error while reading JSON file: ", err);

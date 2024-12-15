@@ -54,6 +54,11 @@
         </div>
     </div>
 
+    <!--NO ROUTE MESSAGE AREA-->
+    <div class="NoRouteMessageArea">
+        No route found for today.
+    </div>
+
 
 
 
@@ -91,7 +96,17 @@
                     TableSummaryRoute(MostRecentRoute.route);
                 } 
                 else{
-                    alert("No route found for today.");
+                    //Update Title with Today's Date
+                    const TitleDate= document.querySelector(".TitleMapFlex h2");
+                    TitleDate.innerText= `${TodayFormatted}`;
+
+                    //Hide MAP+ROUTE TABLE
+                    document.getElementById("MapTrash").style.display= "none";
+                    document.querySelector(".SummaryRouteAndSendRoute").style.display= "none";
+
+                    //Show Message when No Route found 
+                    const NoRouteMessage= document.querySelector(".NoRouteMessageArea");
+                    NoRouteMessage.style.display= "block";
                 }
             })
             .catch((error)=> console.error("Error while loading data: ",error));

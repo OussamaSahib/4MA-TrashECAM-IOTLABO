@@ -141,11 +141,13 @@ margin-top: 2%;}
             .tdend
             {background-color:rgb(132, 7, 5)}
 
+  
 
 
-
-
-
-
-
-   
+/*NO ROUTE MESSAGE AREA*/
+.NoRouteMessageArea
+{display:none; 
+text-align: center; 
+color: white; 
+font-size: 2rem; 
+margin-top: 15px;}
