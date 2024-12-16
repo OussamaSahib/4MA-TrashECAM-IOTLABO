@@ -39,3 +39,13 @@ server.listen(3000,()=> {
   console.log("Server listening on port 3000");
 });
 ```
+
+
+## 📦Used libraries
+- Express
+- Socket.IO
+- MQTT
+- Nodemon
+- EJS
+- File System (fs)
+- Google Maps API (-->via an API key)
