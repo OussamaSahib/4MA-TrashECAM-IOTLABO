@@ -2,7 +2,7 @@
 # ECAM 4MA Project Trash - Labo IOT
 
 ## 📋 Prerequisites
-Before starting, download Node.js from the official website: [NodeJS](nodejs.org/en/).
+Before starting, download Node.js from the official website: [NodeJS](https://nodejs.org/en/)
 
 
 ## ⚙️ Project Installation
