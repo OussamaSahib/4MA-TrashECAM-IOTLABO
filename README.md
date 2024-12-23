@@ -1,5 +1,13 @@
 
 # ECAM 4MA Project Trash - Labo IOT
+An efficient waste management system plays a major role in our modern urban living. To address this problem, our team developed a prototype as part of our IoT Lab course, given at ECAM in 1st year of master.  
+  
+The goal of our prototype is to automate waste management in urban areas, using HX711 adc and signal amplifier  on a load cell as well as a HC-SR04 ultrasonic sensor to remotely monitor weight and the fill level  of bins. We aim to optimize waste collection, prevent overflow and improve the efficiency of collection services. The device should be powered by a battery and directly installed inside the bins.  
+  
+Our prototype uses the LoRaWAN technology with an Adafruit Feather M0. Since it is used to know the fill level of a bin, we called this project “Garbage Filling Notifier”. It will communicate with The Things Network server using the Internet. Then, a user can use an application that will show details on each bins’ filling level.  
+
+The source code for this project can be found in the folder ```Project_INO```, where there is the .ino file. This file is designed to be executed using the Arduino IDE. From now on, we will now detail **how to install and configure the ```server``` for this project**.
+
 
 ## 📋 Prerequisites
 Before starting, download Node.js from the official website: [NodeJS](https://nodejs.org/en/)
